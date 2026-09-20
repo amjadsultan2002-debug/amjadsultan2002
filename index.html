@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amjad Sultan — Architecture / 3D / Graphic Design</title>
+  <meta name="description" content="Amjad Sultan — Architecture, 3D visualization, CGI and graphic design portfolio." />
+  <meta name="theme-color" content="#333333" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#333333;
+      --paper:#f5f5f5;
+      --text:#cccccc;
+      --muted:rgba(204,204,204,.70);
+      --line:rgba(204,204,204,.14);
+      --green:#568259;
+      --card:#3a3a3a;
+      --card-hover:#414141;
+      --max: 1440px;
+      --ease:cubic-bezier(.16,1,.3,1);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{margin:0;background:radial-gradient(circle at 50% -10%, rgba(86,130,89,.24), transparent 34%),var(--bg);color:var(--paper);font-family:"Tajawal",Arial,sans-serif;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit;color:inherit}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    .noise{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:.055;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+    .cursor{position:fixed;left:0;top:0;width:16px;height:16px;border:1px solid var(--paper);border-radius:50%;pointer-events:none;z-index:500;mix-blend-mode:difference;transform:translate(-50%,-50%);transition:width .25s var(--ease),height .25s var(--ease),background .25s var(--ease)}
+    .cursor.is-hover{width:60px;height:60px;background:var(--paper)}
+    .progress{position:fixed;top:0;left:0;height:2px;background:var(--green);width:0;z-index:300}
+    .preloader{position:fixed;inset:0;z-index:400;background:#2c2c2c;display:grid;place-items:center;transition:opacity .8s var(--ease),visibility .8s}
+    .preloader.hide{opacity:0;visibility:hidden}
+    .preloader-inner{width:min(760px,86vw)}
+    .preloader-meta{display:flex;justify-content:space-between;letter-spacing:.14em;text-transform:uppercase;font-size:11px;color:var(--muted);margin-bottom:14px}
+    .preloader-line{height:1px;background:var(--line);overflow:hidden}
+    .preloader-line > span{display:block;height:100%;width:0;background:var(--paper);animation:load 1.8s var(--ease) forwards}
+    @keyframes load{to{width:100%}}
+    .container{width:min(var(--max),92vw);margin:0 auto}
+    header{position:fixed;top:0;left:0;right:0;z-index:250;padding:22px 4vw;mix-blend-mode:difference}
+    .nav{display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:800;letter-spacing:.01em;font-size:14px}
+    .brand small{display:block;font-size:9px;font-weight:400;letter-spacing:.18em;opacity:.7;margin-top:2px}
+    .nav-links{display:flex;gap:18px;align-items:center;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+    .nav-links a{opacity:.75;transition:opacity .2s}
+    .nav-links a:hover{opacity:1}
+    .menu-btn{border:1px solid currentColor;background:transparent;border-radius:999px;padding:10px 14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+    main{position:relative}
+    .hero{position:relative;display:block;overflow:hidden;background:#333333;line-height:0;padding:0!important}
+    .hero-media{position:relative;width:100%}
+    .hero-media img{transform:none;filter:none;object-fit:contain;object-position:center center;background:#333333;width:100%;height:auto}
+    .hero-overlay{display:none}
+    .hero-copy{display:none}
+    .eyebrow{display:flex;gap:14px;align-items:center;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#f0f0f0;margin-bottom:18px}
+    .eyebrow:before{content:"";width:42px;height:1px;background:var(--green)}
+    h1{font-size:clamp(64px,13vw,220px);line-height:.82;letter-spacing:-.055em;margin:0;font-weight:800;text-transform:uppercase}
+    .hero-sub{margin-top:26px;display:flex;justify-content:space-between;gap:30px;align-items:end}
+    .hero-sub p{max-width:520px;color:#d2d2d2;font-size:clamp(14px,1.3vw,19px);line-height:1.5;margin:0}
+    .hero-cta{display:flex;gap:10px;align-items:center;white-space:nowrap;font-size:11px;letter-spacing:.13em;text-transform:uppercase}
+    .circle-arrow{width:48px;height:48px;border:1px solid rgba(245,245,245,.55);border-radius:50%;display:grid;place-items:center;transition:transform .3s var(--ease),background .3s}
+    .hero-cta:hover .circle-arrow{transform:translateY(4px);background:var(--green);color:#000;border-color:var(--green)}
+    .hero-side{display:none}
+    .ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;background:#333333}
+    .ticker-track{display:flex;width:max-content;will-change:transform;animation:tickerLoop 26s linear infinite}
+    .ticker-group{display:flex;align-items:center;gap:34px;flex-shrink:0;padding:18px 34px 18px 0}
+    .ticker span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#b8b8b8}
+    .ticker b{color:var(--green);font-weight:400}
+    
+    section{position:relative;padding:120px 0}
+    .section-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:42px}
+    .kicker{font-size:10px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase}
+    .section-title{font-size:clamp(38px,7vw,108px);letter-spacing:-.05em;line-height:.86;text-transform:uppercase;margin:0}
+    .work-intro{display:grid;grid-template-columns:1fr 1.1fr;gap:5vw;align-items:end;margin-bottom:70px}
+    .work-intro p{font-size:clamp(18px,2.1vw,30px);line-height:1.25;margin:0;color:#d7d7d7;max-width:760px}
+    .index-meta{text-align:right;font-size:10px;letter-spacing:.17em;color:var(--muted);text-transform:uppercase}
+    .projects{display:grid;gap:80px}
+    .project{display:grid;grid-template-columns:1fr 2.25fr;gap:30px;align-items:end}
+    .project:nth-child(even){grid-template-columns:2.25fr 1fr}
+    .project:nth-child(even) .project-copy{order:2}
+    .project-media{position:relative;aspect-ratio:1.54/1;overflow:hidden;background:#3a3a3a;cursor:pointer}
+    .project-media img{transition:transform 1.2s var(--ease),filter .8s var(--ease);transform:scale(1.03)}
+    .project-media:hover img{transform:scale(1.12);filter:saturate(1.1) contrast(1.05)}
+    .project-label{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-between;padding:18px;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.65));font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:0;transition:opacity .35s}
+    .project-media:hover .project-label{opacity:1}
+    .project-copy{padding:0 6px 6px}
+    .project-no{font-size:10px;color:var(--green);letter-spacing:.16em;margin-bottom:18px}
+    .project-title{font-size:clamp(32px,4vw,65px);line-height:.95;letter-spacing:-.05em;margin:0 0 15px;text-transform:uppercase}
+    .project-desc{color:var(--muted);font-size:13px;line-height:1.6;max-width:380px;margin:0 0 22px}
+    .project-tags{display:flex;flex-wrap:wrap;gap:7px}
+    .tag{border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#b8b8b8}
+    .about{background:#3a3a3a;color:#f5f5f5;padding:140px 0}
+    .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:7vw;align-items:start}
+    .about h2{font-size:clamp(48px,8vw,130px);line-height:.82;letter-spacing:-.065em;text-transform:uppercase;margin:0}
+    .about-copy{padding-top:8px}
+    .about-copy p{font-size:clamp(18px,2vw,28px);line-height:1.3;margin:0 0 28px}
+    .facts{border-top:1px solid rgba(204,204,204,.14);margin-top:40px}
+    .fact{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(204,204,204,.14);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+    .fact span:last-child{color:rgba(204,204,204,.68)}
+    .services{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+    .service{min-height:280px;background:var(--card);padding:26px;display:flex;flex-direction:column;justify-content:space-between}
+    .service h3{font-size:clamp(26px,3vw,44px);text-transform:uppercase;letter-spacing:-.04em;line-height:.95;margin:0;max-width:240px}
+    .service p{margin:0;color:var(--muted);font-size:12px;line-height:1.5;max-width:280px}
+    .contact{padding:150px 0 80px;overflow:hidden}
+    .contact-wrap{display:grid;grid-template-columns:1fr;gap:25px}
+    .contact h2{font-size:clamp(60px,13vw,220px);line-height:.8;letter-spacing:-.075em;text-transform:uppercase;margin:0;max-width:1200px}
+    .contact-line{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:17px;margin-top:60px;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+    .contact-links{display:flex;gap:16px;flex-wrap:wrap}
+    .footer{display:flex;justify-content:space-between;padding:30px 4vw 40px;color:#9a9a9a;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+    .modal{position:fixed;inset:0;background:rgba(51,51,51,.92);backdrop-filter:blur(18px);z-index:450;display:flex;align-items:center;justify-content:center;padding:5vw;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+    .modal.open{opacity:1;visibility:visible}
+    .modal-panel{width:min(1180px,94vw);max-height:88vh;overflow:auto;border:1px solid var(--line);background:#333333;display:grid;grid-template-columns:1.5fr 1fr}
+    .modal-image{min-height:70vh}
+    .modal-image img{object-fit:cover}
+    .modal-copy{padding:36px;display:flex;flex-direction:column;justify-content:space-between}
+    .modal-copy h3{font-size:clamp(34px,4vw,58px);line-height:.9;letter-spacing:-.05em;text-transform:uppercase;margin:0 0 20px}
+    .modal-copy p{color:var(--muted);line-height:1.65;font-size:13px}
+    .modal-close{align-self:flex-end;border:1px solid var(--line);background:transparent;border-radius:999px;padding:10px 14px;cursor:pointer;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+    .modal-link{display:inline-flex;align-items:center;gap:10px;margin-top:24px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+    .modal-link:after{content:'↗';font-size:14px}
+    .link-green{color:var(--green)}
+    .software-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;background:#3a3a3a}
+    .software-track{display:flex;width:max-content;will-change:transform;animation:tickerLoop 30s linear infinite}
+    .software-group{display:flex;align-items:center;gap:38px;flex-shrink:0;padding:19px 38px 19px 0}
+    .software-track span{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#dedede}
+    .software-track b{color:var(--green);font-weight:400}
+
+    @keyframes tickerLoop{
+      from{transform:translate3d(0,0,0)}
+      to{transform:translate3d(-50%,0,0)}
+    }
+    
+    .about-title-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:7vw;align-items:start}
+    .about-title-wrap h2{margin:0}
+    .about-title-wrap .kicker{padding-bottom:8px}
+    .featured-project{grid-template-columns:1fr;gap:30px}
+    .featured-project .project-media{aspect-ratio:16/9}
+    .featured-project .project-copy{display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:end}
+    .brand-social-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .mini-project{display:flex;flex-direction:column;min-width:0}
+    .mini-project .project-media{aspect-ratio:1.15/1}
+    .mini-project .project-copy{padding:22px 4px 0}
+    .mini-project .project-title{font-size:clamp(28px,3vw,52px)}
+    .mini-project .project-desc{max-width:none}
+    .mini-project .project-no{margin-bottom:12px}
+    .social-card .project-media img{object-position:center center}
+    .social-link{display:inline-flex;align-items:center;gap:9px;color:var(--green);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-top:4px}
+    .social-link:after{content:'↗';font-size:14px}
+    .contact-layout{align-items:flex-start}
+    .contact-intro{max-width:420px}
+    .contact-note{margin-top:14px;color:rgba(204,204,204,.48);font-size:13px;line-height:1.7}
+    .contact-groups{display:grid;grid-template-columns:1fr;gap:38px;width:min(640px,100%)}
+    .contact-group{min-width:0}
+    .contact-group .kicker{margin-bottom:12px}
+    .contact-links{display:grid;gap:10px}
+    .contact-links a{display:grid;grid-template-columns:92px 1fr 22px;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);text-decoration:none}
+    .contact-links a:last-child{border-bottom:1px solid var(--line)}
+    .contact-links span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(204,204,204,.52)}
+    .contact-links strong{font-size:14px;font-weight:500;color:var(--white);word-break:break-word}
+    .contact-links b{font-size:15px;font-weight:400;color:var(--green);text-align:right}
+    .contact-links a:hover strong{color:var(--green)}
+    .social-group{margin-top:6px}
+    .contact-socials{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:4px}
+    .contact-socials a{display:flex !important;align-items:center !important;justify-content:center !important;width:48px;height:48px;padding:0 !important;border:1px solid var(--line);border-radius:50%;transition:transform .25s var(--ease),background .25s,border-color .25s,color .25s}
+    .contact-socials a:last-child{border-bottom:1px solid var(--line)}
+    .contact-socials a span{display:none}
+    .contact-socials a strong,.contact-socials a strong.social-icon{display:flex !important;align-items:center !important;justify-content:center !important;width:100% !important;height:100% !important;margin:0 !important;padding:0 !important;font-size:11px;font-weight:700;line-height:1 !important;color:var(--paper);letter-spacing:0;text-transform:none;text-align:center !important}
+    .contact-socials a b{display:none}
+    .contact-socials a:hover{transform:translateY(-2px);background:var(--green);border-color:var(--green);color:#161616}
+    .contact-socials a:hover strong{color:#161616}
+    .social-icon{font-size:11px;font-weight:800}
+
+    @media (max-width:820px){
+      .hero{min-height:0}
+      .featured-project .project-copy{grid-template-columns:1fr;gap:18px}
+      .brand-social-grid{grid-template-columns:1fr}
+      .about-title-wrap{grid-template-columns:1fr;gap:15px}
+    }
+    @media (max-width: 820px){
+      header{padding:18px 5vw}.nav-links{gap:8px}.nav-links a{display:none}
+      .hero-copy{padding:13vh 0 7vh}.hero-sub{flex-direction:column;align-items:flex-start}.hero-side{display:none}
+      section{padding:88px 0}.work-intro{grid-template-columns:1fr;gap:22px}.index-meta{text-align:left}
+      .project,.project:nth-child(even){grid-template-columns:1fr;gap:20px}.project:nth-child(even) .project-copy{order:initial}
+      .about-grid{grid-template-columns:1fr;gap:42px}.services{grid-template-columns:1fr}.service{min-height:210px}
+      .modal-panel{grid-template-columns:1fr}.modal-image{min-height:42vh}.modal-copy{padding:24px}
+      .contact-line{flex-direction:column}.footer{flex-direction:column;gap:8px}
+    }
+    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}.cursor{display:none}}
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+  <div class="preloader" id="preloader">
+    <div class="preloader-inner">
+      <div class="preloader-meta"><span>AMJAD SULTAN</span><span>VISUAL PORTFOLIO / 2026</span></div>
+      <div class="preloader-line"><span></span></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="nav">
+      <a class="brand" href="#top">AMJAD SULTAN<small>ARCHITECT / 3D / GRAPHIC DESIGN</small></a>
+      <nav class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#about">Profile</a>
+        <a href="#contact">Contact</a>
+        <button class="menu-btn" type="button" onclick="openMenu()">Menu</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="Amjad Sultan hero">
+      <div class="hero-media"><img id="heroImage" src="" data-image-key="cover" alt="Amjad Sultan portfolio cover" /></div>
+      <div class="hero-overlay"></div>
+      <div class="container hero-copy">
+        <div class="eyebrow">Architecture / Graphic Design / 3D Visualization</div>
+        <h1>AMJAD<br><span style="color:var(--green)">SULTAN</span></h1>
+        <div class="hero-sub">
+          <p>Architect &amp; Graphic Designer working across architecture, 3D visualization, CGI and visual identity — presented as an immersive visual experience.</p>
+          <a class="hero-cta" href="#work"><span>Explore selected work</span><span class="circle-arrow">↓</span></a>
+        </div>
+      </div>
+      <div class="hero-side">Architecture · 3D · Graphic Design · Available for freelance &amp; full-time</div>
+    </section>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <div class="ticker-group">
+          <span>SOCIAL MEDIA DESIGN</span><b>×</b><span>PRINT DESIGN</span><b>×</b><span>BRAND IDENTITY</span><b>×</b><span>POSTERS</span><b>×</b><span>PACKAGING</span><b>×</b><span>MOTION GRAPHICS</span><b>×</b><span>TYPOGRAPHY</span><b>×</b><span>ART DIRECTION</span><b>×</b><span>ARCHITECTURE</span><b>×</b><span>INTERIOR DESIGN</span><b>×</b><span>3D VISUALIZATION</span><b>×</b><span>CGI</span><b>×</b><span>PRODUCT VISUALIZATION</span><b>×</b>
+        </div>
+        <div class="ticker-group" aria-hidden="true">
+          <span>SOCIAL MEDIA DESIGN</span><b>×</b><span>PRINT DESIGN</span><b>×</b><span>BRAND IDENTITY</span><b>×</b><span>POSTERS</span><b>×</b><span>PACKAGING</span><b>×</b><span>MOTION GRAPHICS</span><b>×</b><span>TYPOGRAPHY</span><b>×</b><span>ART DIRECTION</span><b>×</b><span>ARCHITECTURE</span><b>×</b><span>INTERIOR DESIGN</span><b>×</b><span>3D VISUALIZATION</span><b>×</b><span>CGI</span><b>×</b><span>PRODUCT VISUALIZATION</span><b>×</b>
+        </div>
+      </div>
+    </div>
+
+    <section id="work">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">01 / selected work</div>
+          <div class="kicker">Scroll / hover / explore</div>
+        </div>
+        <div class="work-intro">
+          <h2 class="section-title">The<br>Projects</h2>
+          <div>
+            <p>A curated sequence from Amjad's work across architecture, brand identity, social media design, CGI and interior visualization.</p>
+            <div class="index-meta" style="margin-top:22px">Current selection / 04 works</div>
+          </div>
+        </div>
+
+        <div class="projects">
+          <article class="project featured-project" data-project="0">
+            <div class="project-media"><img src="" data-image-key="majlis" alt="Neo-Classical Luxury Majlis interior render" loading="lazy"><div class="project-label"><span>Open project</span><span>↗</span></div></div>
+            <div class="project-copy">
+              <div>
+                <div class="project-no">01 — INTERIOR / 3D</div>
+                <h3 class="project-title">Neo-Classical<br>Luxury Majlis</h3>
+              </div>
+              <div>
+                <p class="project-desc">A refined interior visualization built around symmetry, decorative detailing, warm metals, soft architectural lighting and a cinematic material palette.</p>
+                <div class="project-tags"><span class="tag">3DS Max</span><span class="tag">AI Render</span><span class="tag">Interior</span></div>
+              </div>
+            </div>
+          </article>
+
+          <div class="brand-social-grid">
+            <article class="mini-project" data-project="1">
+              <div class="project-media"><img src="" data-image-key="brand" alt="AYM Center brand identity" loading="lazy"><div class="project-label"><span>Open project</span><span>↗</span></div></div>
+              <div class="project-copy">
+                <div class="project-no">02A — BRAND DESIGN</div>
+                <h3 class="project-title">AYM Center<br>Brand Identity</h3>
+                <p class="project-desc">Logo, applications, mockups and a flexible identity system developed for AYM Center.</p>
+                <div class="project-tags"><span class="tag">Brand Identity</span><span class="tag">Logo</span><span class="tag">Photoshop</span><span class="tag">After Effects</span></div>
+              </div>
+            </article>
+
+            <article class="mini-project social-card" data-project="2">
+              <div class="project-media"><img src="" data-image-key="social" alt="AYM social media design" loading="lazy"><div class="project-label"><span>Open Instagram</span><span>↗</span></div></div>
+              <div class="project-copy">
+                <div class="project-no">02B — SOCIAL MEDIA DESIGN</div>
+                <h3 class="project-title">Social<br>Media Design</h3>
+                <p class="project-desc">A curated social-first visual language with campaign posts, clean typography and branded compositions.</p>
+                <div class="project-tags"><span class="tag">Social Media</span><span class="tag">Art Direction</span><span class="tag">Photoshop</span></div>
+                <a class="social-link" href="https://www.instagram.com/amjadsultan2002/" target="_blank" rel="noreferrer">Visit Instagram</a>
+              </div>
+            </article>
+          </div>
+
+          <article class="project featured-project" data-project="3">
+            <div class="project-media"><img src="" data-image-key="dior" alt="Dior perfume CGI render" loading="lazy"><div class="project-label"><span>Open project</span><span>↗</span></div></div>
+            <div class="project-copy">
+              <div>
+                <div class="project-no">03 — CGI</div>
+                <h3 class="project-title">Dior<br>Perfume</h3>
+              </div>
+              <div>
+                <p class="project-desc">3D product imagery exploring reflective materials, elegant forms and clean luxury framing through cinematic CGI.</p>
+                <div class="project-tags"><span class="tag">Blender</span><span class="tag">Cycles</span><span class="tag">CGI</span><span class="tag">Animation</span></div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="about">
+      <div class="container">
+        <div class="about-title-wrap">
+          <div style="position:relative">
+            <img src="" data-image-key="profile" alt="Amjad Sultan" loading="lazy" style="width:112px;height:112px;border-radius:50%;object-fit:cover;margin-bottom:28px;border:4px solid rgba(86,130,89,.55);background:#333">
+            <h2>Design<br>with<br>dimension.</h2>
+          </div>
+          <div class="about-copy">
+            <div class="kicker" style="margin-bottom:44px">Visual thinking across space, image &amp; identity.</div>
+            <p>Amjad Sultan is an architect and graphic designer working across spatial design, 3D visualization, CGI and visual identity. The portfolio spans architecture, interiors, branding and product imagery.</p>
+            <p style="color:#a0a0a0;font-size:14px;line-height:1.65">The visual rhythm is cinematic, while the identity, palette and typography stay rooted in Amjad's own portfolio language.</p>
+            <div class="facts">
+              <div class="fact"><span>Base</span><span>Damascus, Syria</span></div>
+              <div class="fact"><span>Availability</span><span>Freelance / Full-time</span></div>
+              <div class="fact"><span>Primary tools</span><span>3DS Max / Revit / Blender / Photoshop</span></div>
+              <div class="fact"><span>Behance</span><span>amjadsultan2002</span></div>
+            </div>
+            <a href="https://amjadsultan2002.github.io/amjadsultan2002/Amjad_Sultan_CV.pdf" target="_blank" rel="noreferrer" style="display:inline-flex;align-items:center;gap:10px;margin-top:26px;padding:12px 16px;border:1px solid var(--line);border-radius:999px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper);transition:background .25s ease,border-color .25s ease,color .25s ease" onmouseover="this.style.background='var(--green)';this.style.borderColor='var(--green)';this.style.color='#111'" onmouseout="this.style.background='transparent';this.style.borderColor='var(--line)';this.style.color='var(--paper)'">View CV <span style="font-size:14px">↗</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="software-strip" aria-label="Software I use">
+      <div class="software-track">
+        <div class="software-group">
+          <span>3DS MAX</span><b>×</b><span>REVIT</span><b>×</b><span>BLENDER</span><b>×</b><span>TWINMOTION</span><b>×</b><span>PHOTOSHOP</span><b>×</b><span>ILLUSTRATOR</span><b>×</b><span>AFTER EFFECTS</span><b>×</b>
+        </div>
+        <div class="software-group" aria-hidden="true">
+          <span>3DS MAX</span><b>×</b><span>REVIT</span><b>×</b><span>BLENDER</span><b>×</b><span>TWINMOTION</span><b>×</b><span>PHOTOSHOP</span><b>×</b><span>ILLUSTRATOR</span><b>×</b><span>AFTER EFFECTS</span><b>×</b>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <div class="container">
+        <div class="section-head"><div class="kicker">02 / capabilities</div><div class="kicker">From concept to final frame</div></div>
+        <div class="services">
+          <div class="service"><div class="kicker">01</div><h3>Architecture<br>&amp; Interior</h3><p>Concept development, architectural visualization, interior scenes, diagrams and presentation imagery.</p></div>
+          <div class="service"><div class="kicker">02</div><h3>3D / CGI<br>&amp; Motion</h3><p>Product visualization, material studies, animation, cinematic frames and campaign-ready CGI.</p></div>
+          <div class="service"><div class="kicker">03</div><h3>Graphic<br>&amp; Identity</h3><p>Brand identity, social systems, logo design, presentation assets and visual direction.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div class="container contact-wrap">
+        <div class="kicker">03 / Start a project</div>
+        <h2>Let's<br>make<br>something.</h2>
+        <div class="contact-line contact-layout">
+          <div class="contact-intro">
+            <div>Available for freelance &amp; full-time opportunities</div>
+            <div class="contact-note">Direct contact and social profiles, kept separate for clarity.</div>
+          </div>
+          <div class="contact-groups">
+            <div class="contact-group">
+              <div class="kicker">Direct contact</div>
+              <div class="contact-links">
+                <a href="tel:+963968364160"><span>Phone</span><strong>+963 968 364 160</strong><b>↗</b></a>
+                <a href="https://wa.me/963968364160" target="_blank" rel="noreferrer"><span>WhatsApp</span><strong>Message on WhatsApp</strong><b>↗</b></a>
+                <a href="mailto:amjadsultan2002@gmail.com"><span>Email</span><strong>amjadsultan2002@gmail.com</strong><b>↗</b></a>
+              </div>
+            </div>
+            <div class="contact-group social-group">
+              <div class="kicker">Social</div>
+              <div class="contact-links contact-socials">
+                <a href="https://www.behance.net/amjadsultan2002" target="_blank" rel="noreferrer" aria-label="Behance" title="Behance"><span>Behance</span><strong class="social-icon">Bē</strong><b>↗</b></a>
+                <a href="https://www.instagram.com/amjadsultan2002/" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram"><span>Instagram</span><strong class="social-icon">IG</strong><b>↗</b></a>
+                <a href="https://www.linkedin.com/in/amjad-sultan-354664357/" target="_blank" rel="noreferrer" aria-label="LinkedIn" title="LinkedIn"><span>LinkedIn</span><strong class="social-icon">in</strong><b>↗</b></a>
+                <a href="https://www.pinterest.com/amjadsultan2002/" target="_blank" rel="noreferrer" aria-label="Pinterest" title="Pinterest"><span>Pinterest</span><strong class="social-icon">P</strong><b>↗</b></a>
+                <a href="https://www.facebook.com/profile.php?id=100095302298852" target="_blank" rel="noreferrer" aria-label="Facebook" title="Facebook"><span>Facebook</span><strong class="social-icon">f</strong><b>↗</b></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><span>© 2026 Amjad Sultan</span><span>Architecture / 3D / Graphic Design</span><span><a href="#top">Back to top ↑</a></span></footer>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-image"><img id="modalImage" src="" alt=""></div>
+      <div class="modal-copy">
+        <div>
+          <button class="modal-close" type="button" onclick="closeModal()">Close ×</button>
+          <div class="project-no" id="modalNo" style="margin-top:28px"></div>
+          <h3 id="modalTitle"></h3>
+          <p id="modalText"></p>
+          <a id="modalLink" class="modal-link" href="#" target="_blank" rel="noreferrer">Open on Behance</a>
+        </div>
+        <div class="kicker" id="modalTags"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ================= IMAGE FILES =================
+       Upload these files beside index.html on GitHub.
+       To change a cover, replace the filename here only.
+    ================================================ */
+    const IMAGES = {
+      cover: "cover.jpg",
+      majlis: "01-majlis.jpg",
+      brand: "02a-brand.jpg",
+      social: "02b-social.jpg",
+      dior: "03-dior.jpg",
+      profile: "profile.jpg"
+    };
+
+    const REMOTE_IMAGES = {
+      cover: "https://amjadsultan2002.github.io/amjadsultan2002/cover.jpg",
+      majlis: "https://mir-s3-cdn-cf.behance.net/project_modules/max_3840_webp/c693ad254886403.6a903d362c3e4.png",
+      brand: "https://mir-s3-cdn-cf.behance.net/project_modules/1400/f06e13254181981.6a7c7923df5c3.png",
+      social: "https://mir-s3-cdn-cf.behance.net/project_modules/1400/e156ad254181981.6a7c7922a02a4.png",
+      dior: "https://mir-s3-cdn-cf.behance.net/project_modules/max_3840_webp/46fd93228526847.68558a9e6440c.png",
+      profile: "https://amjadsultan2002.github.io/amjadsultan2002/profile.jpg"
+    };
+
+    function setImageFallback(img, key) {
+      if (!img.dataset.fallbackBound) {
+        img.dataset.fallbackBound = '1';
+        img.addEventListener('error', () => {
+          if (img.src !== REMOTE_IMAGES[key]) img.src = REMOTE_IMAGES[key];
+        }, { once: true });
+      }
+      img.src = IMAGES[key];
+    }
+
+
+    const projects = [
+      {linkLabel:'Open on Behance', no:'01 — INTERIOR / 3D', title:'Neo-Classical Luxury Majlis', text:'Interior visualization study with a strong architectural rhythm, decorative detailing, reflective materials and warm cinematic light.', image:IMAGES.majlis, link:'https://www.behance.net/gallery/254886403/Neo-Classical-Luxury-Majlis-Design-3DSMAX-AI-RENDER', tags:'3DS MAX / AI RENDER / INTERIOR'},
+      {linkLabel:'Open on Behance', no:'02A — BRAND DESIGN', title:'AYM Center Brand Identity', text:'Brand identity system for AYM Center, with logo development, applications, mockups and a flexible visual language.', image:IMAGES.brand, link:'https://www.behance.net/gallery/254181981/AYM-Center-Brand-Identity-design-logo-design', tags:'BRAND IDENTITY / LOGO / PHOTOSHOP / AFTER EFFECTS'},
+      {linkLabel:'Visit Instagram', no:'02B — SOCIAL MEDIA DESIGN', title:'Social Media Design', text:'Selected social-first design work presented as a visual bridge to Amjad\'s Instagram portfolio.', image:IMAGES.social, link:'https://www.instagram.com/amjadsultan2002/', tags:'SOCIAL MEDIA / ART DIRECTION / PHOTOSHOP'},
+      {linkLabel:'Open on Behance', no:'03 — CGI', title:'Dior Perfume', text:'3D product design and CGI language focused on reflective surfaces, elegant forms and luxury-product mood.', image:IMAGES.dior, link:'https://www.behance.net/gallery/228526847/Dior-Perfume-3D-Producte-Design-CGI', tags:'BLENDER / CYCLES / CGI / ANIMATION'},
+    ];
+    const cursor = document.getElementById('cursor');
+    const progress = document.getElementById('progress');
+    const preloader = document.getElementById('preloader');
+    const modal = document.getElementById('modal');
+    const heroImage = document.getElementById('heroImage');
+
+    window.addEventListener('load', () => setTimeout(() => preloader.classList.add('hide'), 1200));
+    window.addEventListener('scroll', () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.width = `${Math.min(100, (window.scrollY / max) * 100)}%`;
+    });
+
+    window.addEventListener('pointermove', e => {
+      cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+      heroImage.style.transform = 'scale(1)';
+    });
+    document.querySelectorAll('a,button,.project-media').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
+    });
+
+    document.querySelectorAll('.project, .mini-project').forEach(card => {
+      card.addEventListener('click', () => openProject(Number(card.dataset.project)));
+    });
+    document.querySelectorAll('.social-link').forEach(link => {
+      link.addEventListener('click', e => e.stopPropagation());
+    });
+
+    function openProject(i){
+      const p = projects[i];
+      const modalImg = document.getElementById('modalImage');
+      modalImg.onerror = () => {
+        const fallbacks = {
+          '01-majlis.jpg': REMOTE_IMAGES.majlis,
+          '02a-brand.jpg': REMOTE_IMAGES.brand,
+          '02b-social.jpg': REMOTE_IMAGES.social,
+          '03-dior.jpg': REMOTE_IMAGES.dior
+        };
+        if (fallbacks[p.image] && modalImg.src !== fallbacks[p.image]) modalImg.src = fallbacks[p.image];
+      };
+      modalImg.src = p.image;
+      modalImg.alt = p.title;
+      document.getElementById('modalNo').textContent = p.no;
+      document.getElementById('modalTitle').textContent = p.title;
+      document.getElementById('modalText').textContent = p.text;
+      document.getElementById('modalTags').textContent = p.tags;
+      document.getElementById('modalLink').href = p.link; document.getElementById('modalLink').textContent = p.linkLabel;
+      modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+    }
+    function closeModal(){modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow='';}
+    modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+    function openMenu(){
+      const menu = document.createElement('div');
+      menu.style.cssText='position:fixed;inset:0;z-index:440;background:#333333;display:grid;place-items:center;padding:10vw';
+      menu.innerHTML=`<div style="width:min(760px,92vw)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:48px"><span style="font-size:10px;letter-spacing:.18em;color:rgba(204,204,204,.58);text-transform:uppercase">Navigation</span><button class="menu-btn" onclick="this.closest('div[style]').parentElement.parentElement.remove()">Close ×</button></div><a href="#work" style="display:block;font-size:clamp(48px,10vw,120px);line-height:.84;letter-spacing:-.06em;text-transform:uppercase;border-bottom:1px solid rgba(204,204,204,.14);padding:16px 0" onclick="this.parentElement.parentElement.parentElement.remove()">Work</a><a href="#about" style="display:block;font-size:clamp(48px,10vw,120px);line-height:.84;letter-spacing:-.06em;text-transform:uppercase;border-bottom:1px solid rgba(204,204,204,.14);padding:16px 0" onclick="this.parentElement.parentElement.parentElement.remove()">Profile</a><a href="#contact" style="display:block;font-size:clamp(48px,10vw,120px);line-height:.84;letter-spacing:-.06em;text-transform:uppercase;padding:16px 0" onclick="this.parentElement.parentElement.parentElement.remove()">Contact</a></div>`;
+      document.body.appendChild(menu);
+    }
+  </script>
+<script>
+  document.querySelectorAll('img[data-image-key]').forEach(img => {
+    const key = img.dataset.imageKey;
+    setImageFallback(img, key);
+  });
+</script>
+</body>
+</html>
